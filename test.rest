@@ -1,0 +1,53 @@
+### REGISTERING A USER
+POST http://localhost:5000/auth/register
+Content-Type: application/json
+
+{
+    "username" : "testUser32",
+    "password" : "123123" 
+}
+
+### LOGGIN-IN A USER
+POST http://localhost:5000/auth/login
+Content-Type: application/json
+
+{
+    "username" : "testUser32",
+    "password" : "123123"
+}
+
+### REMOVE 
+DELETE http://localhost:5000/auth/remove/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzg1MjU3NjYwLCJleHAiOjE3ODUzNDQwNjB9.eY4oCGe74lf4OwVfSGK3Epmbd4dIaajt0pJ8ndODONY
+
+### CREATE NOTE
+POST http://localhost:5000/notes/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzg1MzEwNDk3LCJleHAiOjE3ODUzOTY4OTd9.ZNIrWkxj7lF7HwTqlPmvlERkbkDwov23AkJIwWpeSZs
+
+{
+    "title" : "my test note",
+    "content" : "this is for the sake of testing"
+}
+
+### GET A NOTE
+GET http://localhost:5000/notes/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzg1MzEwNDk3LCJleHAiOjE3ODUzOTY4OTd9.ZNIrWkxj7lF7HwTqlPmvlERkbkDwov23AkJIwWpeSZs
+
+
+### UPDATE A NOTE
+PUT http://localhost:5000/notes/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzg1MzEwNDk3LCJleHAiOjE3ODUzOTY4OTd9.ZNIrWkxj7lF7HwTqlPmvlERkbkDwov23AkJIwWpeSZs
+
+{
+    "title" : "my updatedddd title",
+    "content" : "this content has been updated"
+}
+
+### DELETE A NOTE 
+DELETE http://localhost:5000/notes/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzg1MzEwNDk3LCJleHAiOjE3ODUzOTY4OTd9.ZNIrWkxj7lF7HwTqlPmvlERkbkDwov23AkJIwWpeSZs
+
