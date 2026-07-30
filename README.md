@@ -1,90 +1,98 @@
 # Notes App API
 
-A lightweight RESTful backend for a notes-taking application, built with Express and SQLite. It handles user registration/authentication and lets authenticated users create and retrieve personal notes.
+A RESTful backend for a notes-taking application, built with Express and SQLite. It handles authentication and lets users manage their own notes — including image uploads, search, and pagination.
 
 ## Overview
 
 This API allows a user to:
 
-- Register an account and log in to receive a JWT
+- Register and log in to receive a JWT
 - Delete their own account
-- Create notes tied to their account
-- Retrieve all of their notes, or a single note by ID
+- Create, update, retrieve, and delete personal notes
+- Upload images attached to notes
+- Search and paginate through their notes
 
-Every notes route is protected — a valid JWT (obtained from `/auth/register` or `/auth/login`) must be sent in the `Authorization` header to access it.
+Every notes route is protected — a valid JWT (from `/auth/register` or `/auth/login`) must be sent in the `Authorization` header.
 
 ## Tech Stack
 
-- **Node.js** / **Express** — server and routing
-- **better-sqlite3** — embedded SQL database, no separate DB server required
-- **jsonwebtoken (JWT)** — stateless authentication
-- **bcrypt** — password hashing
+| Package | Purpose |
+|---|---|
+| Express | Server and routing |
+| better-sqlite3 | Embedded SQLite database |
+| jsonwebtoken | Authentication |
+| bcrypt | Password hashing |
+| Zod | Request validation |
+| Multer | Image uploads (multipart/form-data) |
 
 ## Project Structure
 
 ```
 notes-app/
 ├── controller/
-│   ├── authControllers.js   # register, login, remove
-│   └── noteControllers.js   # createNote, getNotes, getANote
+│   ├── authControllers.js
+│   └── noteControllers.js
 ├── database/
-│   ├── db.js                 # SQLite connection + table setup
+│   ├── db.js
 │   └── notes.db
 ├── middleware/
-│   └── verifyToken.js        # JWT verification middleware
+│   ├── verifyToken.js
+│   └── validate.js
+├── schemas/
+│   ├── registerSchema.js
+│   ├── loginSchema.js
+│   └── noteSchema.js
 ├── routes/
 │   ├── authRoutes.js
 │   └── notesRoutes.js
+├── uploads/            # note images
 ├── src/
-│   └── app.js                 # app entry point
-├── uploads/                   # (reserved for future image uploads)
+│   └── app.js
 ├── .env
 └── package.json
 ```
 
 ## API Endpoints
 
-### Auth (`/auth`)
+### Auth — `/auth`
 
-| Method | Endpoint          | Auth required | Description                    |
-|--------|--------------------|:--------------:|--------------------------------|
-| POST   | `/auth/register`   | No             | Create a new user, returns JWT |
-| POST   | `/auth/login`       | No             | Log in, returns JWT            |
-| DELETE | `/auth/remove`      | Yes            | Delete the logged-in user      |
+| Method | Endpoint | Auth required | Description |
+|---|---|---|---|
+| POST | `/auth/register` | No | Create a new user, returns JWT |
+| POST | `/auth/login` | No | Log in, returns JWT |
+| DELETE | `/auth/remove` | Yes | Delete the logged-in user |
 
-### Notes (`/notes`)
+### Notes — `/notes`
 
-All notes routes require a valid JWT.
+All notes routes require `Authorization: Bearer <token>`.
 
-| Method | Endpoint      | Description                     |
-|--------|---------------|----------------------------------|
-| GET    | `/notes`       | Get all notes for the current user |
-| POST   | `/notes`       | Create a new note                |
-| GET    | `/notes/:id`   | Get a single note by ID          |
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/notes` | Get all notes for the current user |
+| POST | `/notes` | Create a new note |
+| GET | `/notes/:id` | Get a single note by ID |
+| PUT | `/notes/:id` | Update a note |
+| DELETE | `/notes/:id` | Delete a note |
 
-### Authentication
+### Query Parameters
 
-Send the token in the request header:
+`/notes` supports pagination and search, which can be combined:
 
 ```
-Authorization: Bearer <token>
+GET /notes?page=2&limit=10
+GET /notes?search=javascript
+GET /notes?page=1&limit=5&search=project
 ```
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js (v18+)
-
-### Installation
+**Requirements:** Node.js v18+
 
 ```bash
 git clone <repo-url>
 cd notes-app
 npm install
 ```
-
-### Environment Variables
 
 Create a `.env` file in the project root:
 
@@ -93,25 +101,20 @@ PORT=5000
 JWT_SECRET=your_secret_key_here
 ```
 
-### Running the app
+Then run:
 
 ```bash
 npm start
 ```
 
-The server starts on `http://localhost:5000` (or the `PORT` you set). The SQLite database and tables are created automatically on first run.
+The server starts on `http://localhost:5000` (or your configured `PORT`). SQLite tables are created automatically on first run.
 
 ## Roadmap
 
-Planned improvements:
+**Completed:** JWT auth, notes CRUD, authorization checks, Zod validation, image uploads (Multer), search, pagination
 
-- Update / delete note
-- Input validation
-- Image upload for notes
-- Search
-- Pagination
-- Refresh tokens
+**Planned:** Refresh tokens, Prisma ORM migration, PostgreSQL, Docker, automated testing, API documentation, deployment
 
 ## Frontend
 
-This repo is backend-only. It's designed to be paired with a separate frontend client that consumes these endpoints.
+This repo is backend-only, designed to be paired with a separate frontend client.
