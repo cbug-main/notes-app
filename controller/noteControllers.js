@@ -19,16 +19,57 @@ export function createNote (req, res) {
 }
 
 export function getNotes (req, res) {
-    const userId = req.user.id
     
-    const statement = db.prepare(`
-        SELECT id, title, content, image 
-        FROM notes 
-        WHERE userId = ?
-    `)
-    const notes = statement.all(userId)
+    const userId = req.user.id 
 
-    res.status(200).send({
+    const { page = 1, limit = 10, search = ""} = req.query
+    const offset = (page - 1) * limit
+    const statement = db.prepare(`
+        SELECT id, title, content, image
+        FROM notes
+        WHERE userId = ?
+        LIMIT ?
+        OFFSET ?
+    `)
+
+    const notes = statement.all(
+        userId, 
+        Number(limit), 
+        offset
+    )
+
+    return res.status(200).send({
+        notes
+    })
+}
+
+export function searchNotes (req, res) {
+    const userId = req.user.id 
+    const { page = 1, limit = 10, search = ""} = req.query
+    const searchTerm = `%${search}%`
+    const offset = (page - 1) * limit
+
+    const statement = db.prepare(`
+        SELECT id, title, content, image
+        FROM notes
+        WHERE userId = ?
+        AND (
+            title LIKE ?
+            OR content LIKE ?
+        )
+            LIMIT ?
+            OFFSET ?
+    `)
+
+    const notes = statement.all(
+        userId, 
+        searchTerm,
+        searchTerm,
+        Number(limit),
+        offset
+    )
+    
+    return res.status(200).send({
         notes
     })
 }

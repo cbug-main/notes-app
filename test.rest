@@ -23,17 +23,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxN
 ### CREATE NOTE
 POST http://localhost:5000/notes/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzg1MzEwNDk3LCJleHAiOjE3ODUzOTY4OTd9.ZNIrWkxj7lF7HwTqlPmvlERkbkDwov23AkJIwWpeSZs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNzg1NDM0MDIyLCJleHAiOjE3ODU1MjA0MjJ9.1UvAWGbz_tEUVFleK8iulkHXiw8W0nCOrgFCjoT6NsI
 
 {
-    "title" : " ",
-    "content" : "this is for the sake of testing"
+    "title" : "another note",
+    "content" : "ipsom sth i dont know what to put here"
 }
 
-### GET A NOTE
-GET http://localhost:5000/notes/4
+
+### GET NOTES (v2)
+GET http://localhost:5000/notes?page=1&limit=3
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNzg1NDI5ODg0LCJleHAiOjE3ODU1MTYyODR9._EVOYF93g24-wE334YRPf262VoqXqm1IBB2YO1YkKTA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNzg1NDM0MDIyLCJleHAiOjE3ODU1MjA0MjJ9.1UvAWGbz_tEUVFleK8iulkHXiw8W0nCOrgFCjoT6NsI
+
+### SEARCH NOTES 
+GET http://localhost:5000/notes/s?search=image
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNzg1NDM0MDIyLCJleHAiOjE3ODU1MjA0MjJ9.1UvAWGbz_tEUVFleK8iulkHXiw8W0nCOrgFCjoT6NsI
 
 
 ### UPDATE A NOTE
@@ -73,3 +79,4 @@ Content-Type:image/png
 < ./tester.png
 
 --boundary123--
+
