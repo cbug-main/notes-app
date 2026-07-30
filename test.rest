@@ -31,9 +31,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxN
 }
 
 ### GET A NOTE
-GET http://localhost:5000/notes/1
+GET http://localhost:5000/notes/4
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzg1MzEwNDk3LCJleHAiOjE3ODUzOTY4OTd9.ZNIrWkxj7lF7HwTqlPmvlERkbkDwov23AkJIwWpeSZs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNzg1NDI5ODg0LCJleHAiOjE3ODU1MTYyODR9._EVOYF93g24-wE334YRPf262VoqXqm1IBB2YO1YkKTA
 
 
 ### UPDATE A NOTE
@@ -47,7 +47,29 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxN
 }
 
 ### DELETE A NOTE 
-DELETE http://localhost:5000/notes/1
+DELETE http://localhost:5000/notes/3
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzg1MzEwNDk3LCJleHAiOjE3ODUzOTY4OTd9.ZNIrWkxj7lF7HwTqlPmvlERkbkDwov23AkJIwWpeSZs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNzg1NDI5ODg0LCJleHAiOjE3ODU1MTYyODR9._EVOYF93g24-wE334YRPf262VoqXqm1IBB2YO1YkKTA
 
+### create note with image
+POST http://localhost:5000/notes
+Content-Type: multipart/form-data; boundary=boundary123
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNzg1NDI5ODg0LCJleHAiOjE3ODU1MTYyODR9._EVOYF93g24-wE334YRPf262VoqXqm1IBB2YO1YkKTA
+
+--boundary123
+Content-Disposition: form-data; name="title"
+
+My image note
+
+--boundary123
+Content-Disposition: form-data; name="content"
+
+This note has an image
+
+--boundary123
+Content-Disposition: form-data; name="image"; filename="tester.png"
+Content-Type:image/png
+
+< ./tester.png
+
+--boundary123--

@@ -1,12 +1,16 @@
 import db from '../database/db.js'
 
 export function createNote (req, res) {
+    
     const { title, content } = req.body
-
     const userID = req.user.id
 
-    const statement= db.prepare(`INSERT INTO notes(title, content, userId) VALUES(?, ?, ?)`)
-    const result = statement.run(title, content, userID)
+    const image = req.file?.filename ?? null
+
+    const statement= db.prepare(`
+        INSERT INTO notes(title, content, image, userId) 
+        VALUES(?, ?, ?, ?)`)
+    const result = statement.run(title, content, image, userID)
 
     return res.status(201).send({ 
         message: 'Note Created', 
@@ -55,18 +59,22 @@ export function updateNote (req, res) {
     const userId = req.user.id
     const { id } = req.params
     const { title, content } = req.body
+
+    const image = req.file ? req.file.filename : null
     
     const statement = db.prepare(`
         UPDATE notes 
         SET 
             title = COALESCE(?, title),
-            content = COALESCE(?, content)
+            content = COALESCE(?, content),
+            image = COALESCE(?, image)
         WHERE userId = ? AND id = ?
     `)
 
     const result = statement.run(
         title ?? null,
         content ?? null, 
+        image ?? null,
         userId, 
         id
     )
@@ -84,14 +92,16 @@ export function updateNote (req, res) {
 }
 
 export function deleteNote (req, res) {
+    const userId = req.user.id
     const { id } = req.params 
     
     try {
         const statement = db.prepare(`
-            DELETE FROM notes WHERE id = ?
+            DELETE FROM notes 
+            WHERE id = ? AND userId = ?
         `)
 
-        const result = statement.run(id)
+        const result = statement.run(id, userId)
         
         if (result.changes === 0) {
             return console.log('nothing has changed')
