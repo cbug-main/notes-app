@@ -30,4 +30,14 @@ db.exec(`
     )
 `)
 
+db.exec(`
+    CREATE TABLE IF NOT EXISTS refresh_Tokens(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        token TEXT NOT NULL,
+        userId INTEGER NOT NULL,
+        expiresAt INTEGER NOT NULL,
+        FOREIGN KEY (userId) REFERENCES users(id) 
+    )
+`)
+
 export default db

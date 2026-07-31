@@ -10,8 +10,26 @@ export function register(req, res) {
         const insertUser = db.prepare(`INSERT INTO users (username, password) VALUES (?, ?)`)
         const result = insertUser.run(username, hashedPass)
     
-        const token = jwt.sign({ id: result.lastInsertRowid }, process.env.JWT_SECRET, { expiresIn: '24h' })
-        res.json({ token })
+        const accessToken = jwt.sign(
+            {id: result.lastInsertRowid }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '15m' }
+        )
+
+        const refreshToken = jwt.sign(
+            {id: result.lastInsertRowid}, 
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: '7d' }
+        )
+
+        const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000
+
+        const insertRefreshToken = db.prepare(`
+            INSERT INTO refresh_tokens(token, userId, expiresAt)
+            VALUES(?, ?, ?)
+        `)
+
+        res.json({ accessToken, refreshToken })
     
     } catch (err) {
         console.error(err)
@@ -30,8 +48,32 @@ export function login(req, res) {
         const passMatched = bcrypt.compareSync(password, user.password)
         if (!passMatched) return res.status(401).send({ message: `password is invalid` })
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' })
-        res.json({ token })
+        const accessToken = jwt.sign(
+            { id: user.id }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '15m' }
+        )
+
+        const refreshToken = jwt.sign(
+            { id: user.id },
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: '7d' }
+        )
+
+        const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000
+
+        const insertRefreshToken = db.prepare(`
+            INSERT INTO refresh_tokens(token, userId, expiresAt)
+            VALUES(?, ?, ?)
+        `)
+        
+        insertRefreshToken.run(
+            refreshToken,
+            user.id,
+            expiresAt
+        )
+
+        res.json({ accessToken, refreshToken })
         
     } catch(err) {
         console.error(err)
@@ -57,4 +99,51 @@ export function remove(req, res) {
             message: 'internal error'
         })
     }
+}
+
+export function refresh (req, res) {
+
+    const { refreshToken } = req.body
+    const { id } = req.user
+
+    // creating an access token based on the refresh token 
+    const accessToken = jwt.sign(
+        { id : req.user.id },
+        process.env.JWT_SECRET, 
+        {expiresIn: '15m'} 
+    )
+    // removing the old refresh token
+    const found = db.prepare(`
+        SELECT * FROM refresh_tokens
+        WHERE token = ?
+    `).get(refreshToken)
+    
+    console.log(`This is the found token: ${found}`)
+
+    const deleteResult = db.prepare(`
+        DELETE FROM refresh_tokens
+        WHERE token = ?
+    `).run(refreshToken)
+
+    console.log(deleteResult)
+    //create the new refresh token now 
+    const newRefreshToken = jwt.sign(
+        { id : id }, 
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: '7d' }
+    )
+    //store the new refresh Token in database
+    const pushNewRefreshToken = db.prepare(`
+        INSERT INTO refresh_tokens(token, userId, expiresAt)
+        VALUES(?, ?, ?)
+    `)
+    const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000
+
+    const result = pushNewRefreshToken.run(newRefreshToken, id, expiresAt)
+
+    res.json({
+        accessToken,
+        refreshToken : newRefreshToken
+    })
+
 }

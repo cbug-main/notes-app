@@ -3,7 +3,7 @@ POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-    "username" : "testUser2",
+    "username" : "testUser3",
     "password" : "12312sd3" 
 }
 
@@ -80,3 +80,10 @@ Content-Type:image/png
 
 --boundary123--
 
+### REFRESHING THE TOKEN 
+POST http://localhost:5000/auth/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNzg1NTIyODIxLCJleHAiOjE3ODYxMjc2MjF9.HciXV6BYECkbT9lMJym6bA4Uzj9tGz8dma_K4Bvv5ac"
+}
